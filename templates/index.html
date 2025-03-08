@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tourism Budget Management</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side: Form or Map -->
+        <div class="left-side">
+            <!-- Form Section -->
+            <div id="form-container" class="form-container">
+                <h1>Tourism Budget Management</h1>
+                <form action="/submit" method="post">
+                    From:<span>*</span> <input type="text" name="from" required><br>
+                    To: <span>*</span> <input type="text" name="to" required><br>
+                    Total Members: <input type="number" name="total_members"><br>
+                    Budget: <input type="number" name="budget" step="0.01"><br>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            
+            <!-- Map Section -->
+            <div id="map-container" class="map-container">
+                {% if directions %}
+                    <h2 class="dr">Directions:</h2>
+                    <iframe 
+                        src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyC3hCbbPBjqUav_TJEjfry1q2-i67CIN2k&origin={{ from_place }}&destination={{ to_place }}" 
+                        width="600" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="eager">
+                    </iframe>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Right Side: Results and Options -->
+        <div class="right-side">
+            <div id="results-container" class="results-container">
+                {% if directions %}
+                    <p>Total Kilometers: {{ kilometers }}</p>
+                    {% if budget_message %}
+                        <p>{{ budget_message }}</p>
+                    {% endif %}
+                    <a href="/bus?from={{ from_place }}&to={{ to_place }}&budget={{ budget }}" class="button">Bus</a>
+                    <a href="/train?from={{ from_place }}&to={{ to_place }}&budget={{ budget }}" class="button">Train</a>
+                {% endif %}
+                
+                {% if bus_cost_per_person %}
+                    <h2 class="pp">Bus Cost Per Person: ₹{{ bus_cost_per_person }}</h2>
+                {% endif %}
+                
+                {% if train_cost_per_person %}
+                    <h2 class="pp">Train Cost Per Person: ₹{{ train_cost_per_person }}</h2>
+                {% endif %}
+                
+                {% if bus_total_cost %}
+                    <h2 class="tp">Total Bus Cost for All Members: ₹{{ bus_total_cost }}</h2>
+                {% endif %}
+                
+                {% if train_total_cost %}
+                    <h2 class="tp">Total Train Cost for All Members: ₹{{ train_total_cost }}</h2>
+                {% endif %}
+                
+                {% if costs %}
+                    <div id="costs-container" class="costs-container">
+                        <h2 class="tt">
+                            {% if transport_type == 'bus' %}
+                                Bus Cost Details
+                            {% elif transport_type == 'train' %}
+                                Train Cost Details
+                            {% endif %}
+                        </h2>
+                        <div class="transport-container">
+                            {% for item in costs %}
+                                <div class="transport-card">
+                                    <h3 class="pc">{{ item[0] }}</h3>  <!-- Category -->
+                                    <p><strong>Cost:</strong> ₹{{ item[1] }}</p>  <!-- Cost -->
+                                    <p><strong>Timing:</strong> {{ item[2] }}</p>  <!-- Timing -->
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
